@@ -15,7 +15,7 @@ class DiscordDashboardReactClient {
             version: require('./package.json').version,
         };
         require('fs').writeFileSync(`${__dirname}/src/buildSettings.json`, JSON.stringify(thisBuild), 'utf-8');
-        await exec(`cd ${__dirname} & npm run start`);
+        await exec(`cd ${__dirname} & npx react-scripts start`);
     }
 
     build = async () => {
@@ -29,7 +29,7 @@ class DiscordDashboardReactClient {
         if(lastBuild !== JSON.stringify(thisBuild)){
             console.log('New version, settings or first build detected. Please wait for Discord-Dashboard-ReactNative Client to build website. This may take a while...');
             require('fs').writeFileSync(`${__dirname}/src/buildSettings.json`, JSON.stringify(thisBuild), 'utf-8');
-            await exec(`cd ${__dirname} & npm run build`);
+            await exec(`cd ${__dirname} & npx react-scripts build`);
             console.log('Discord-Dashboard-ReactClient is finished now. Access buildPath files via <Discord-Dashboard-ReactClient>.buildPath');
         }
 
