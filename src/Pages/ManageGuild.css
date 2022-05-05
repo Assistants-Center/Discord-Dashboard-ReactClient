@@ -1,0 +1,8 @@
+.onHover:hover {
+    border: 3px solid gray;
+}
+
+
+.onHoverBigger:hover {
+    transform: scale(1.05, 1.05);
+}

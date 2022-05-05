@@ -1,0 +1,6 @@
+@media (max-width: 660px) {
+    emoji-picker {
+        --num-columns: 6;
+        --category-emoji-size: 0.9rem;
+    }
+}
