@@ -2,4 +2,3 @@ node_modules
 .idea
 dev.js
 build/*
-src/buildSettings.json
