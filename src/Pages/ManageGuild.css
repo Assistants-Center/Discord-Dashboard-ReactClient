@@ -6,3 +6,26 @@
 .onHoverBigger:hover {
     transform: scale(1.05, 1.05);
 }
+
+.leftPer {
+    left: 84px;
+}
+
+
+@media (max-width: 599px) {
+    .leftPer {
+        left: 0px !important;
+    }
+}
+
+.submitVisible {
+    visibility: visible;
+    transition: bottom 800ms cubic-bezier(0.68, -0.55, 0.265, 1.55) 0s;
+    bottom: 20px;
+}
+
+.submitHidden {
+    visibility: hidden;
+    bottom: -100px;
+    transition: bottom 800ms cubic-bezier(0.68, -0.55, 0.265, 1.55) 0s;
+}

@@ -4,3 +4,12 @@
         --category-emoji-size: 0.9rem;
     }
 }
+
+emoji-picker {
+    --skintone-border-radius: 1rem;
+    --input-border-radius: 0.7rem;
+}
+
+.picker {
+    border-radius: 20rem !important;
+}

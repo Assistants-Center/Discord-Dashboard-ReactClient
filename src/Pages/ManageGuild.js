@@ -1,11 +1,12 @@
 import React from 'react';
 import GridPage from "./Grid";
-import {Col, Div, Row} from "atomize";
+import {Col, Div, Row, Text} from "atomize";
 import axios from "axios";
 import buildSettings from "../buildSettings.json";
 import {withRouter} from "react-router";
 import CategoriesList from "../Components/Guild/CategoriesList";
 import OptionsCategory from "../Components/Guild/OptionsCategory";
+import './ManageGuild.css';
 
 class ManageGuild extends React.Component {
     constructor(props) {
@@ -69,6 +70,7 @@ class ManageGuild extends React.Component {
 
     render() {
         return (
+            <>
             <GridPage active={this.state.guild_id}>
                 <Div>
                     <Row>
@@ -93,7 +95,7 @@ class ManageGuild extends React.Component {
                                                         actualCategory={this.state.actualCategory}
                                                         setActualCategory={this.setActualCategory}/>
                                         :
-                                        null
+                                        <Text>Loading Guild Info...</Text>
                                 }
                             </Div>
                         </Col>
@@ -136,7 +138,26 @@ class ManageGuild extends React.Component {
                         </Col>
                     </Row>
                 </Div>
+                <Div style={{
+                    right:0,
+                    display:'flex',justifyContent:'center',position:'fixed',
+                }} className={`leftPer ${this.state.showSubmit ? 'submitVisible' : 'submitHidden'}`}>
+                    <Div style={{
+                        width: '80%',
+                        height:'70px',
+                        backgroundColor:'rgba(32,34,37,0.88)',
+                        borderRadius: '15px',
+                        display:'flex',
+                        flexDirection:'row',
+                        justifyContent:'space-between',
+                        alignItems:'center',
+                    }}>
+                        <Text style={{paddingLeft:'2rem'}}>Changes detected!</Text>
+                        <Text style={{paddingRight:'2rem'}}>BUTTON</Text>
+                    </Div>
+                </Div>
             </GridPage>
+            </>
         )
     }
 }

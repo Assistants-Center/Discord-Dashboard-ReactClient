@@ -92,7 +92,10 @@ export default class TextInput extends React.Component {
                         prefix={
                             <Button
                                 pos="absolute"
-                                onClick={() => this.setState({displayEmojiPicker: !this.state.displayEmojiPicker})}
+                                onClick={() => {
+                                    console.log('a')
+                                    this.setState({displayEmojiPicker: !this.state.displayEmojiPicker})
+                                }}
                                 bg="info700"
                                 hoverBg="info800"
                                 w="3rem"
