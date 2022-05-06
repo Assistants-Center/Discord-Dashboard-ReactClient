@@ -1,0 +1,15 @@
+.MuiListItem-root-np {
+    padding: 0px !important;
+}
+
+.MuiListItemButton-root {
+    border-radius: 0.9rem !important;
+}
+
+.Capitalize::first-letter {
+    text-transform: capitalize;
+}
+
+.svg-color {
+    fill: red;
+}

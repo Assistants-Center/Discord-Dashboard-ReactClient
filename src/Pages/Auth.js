@@ -1,22 +1,22 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 import axios from 'axios';
 
 const buildSettings = require('../buildSettings.json');
 const translations = require('../translations.default');
 
 const AuthPage = (props) => {
-    const navigate = useNavigate();
+    const history = useHistory();
     const lang = props.lang || 'pl';
 
-    const redirectTo = useCallback((to) => navigate(to, {replace: true}), [navigate]);
-    const [query] = useSearchParams();
+    const redirectTo = useCallback((to) => history.push(to, {replace: true}), [history]);
+    const {uuid} = useParams();
 
     const [error, setError] = useState('');
 
     const [allowLoad, setAllowLoad] = useState(false);
 
-    const DBD_AccessToken = query.get('uuid');
+    const DBD_AccessToken = uuid;
 
     const FetchUser = async (DBD_AccessToken) => {
         let errored = false;

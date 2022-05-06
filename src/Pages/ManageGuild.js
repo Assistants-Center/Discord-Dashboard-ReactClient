@@ -1,170 +1,144 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from "react-router-dom";
-import axios from 'axios';
-import './ManageGuild.css';
-import TextInput from "../Components/Options/TextInput";
-import {Icon, Notification} from "atomize";
-import BasicModal from '../Components/modals/BasicModal';
+import React from 'react';
 import GridPage from "./Grid";
-import EmojiPicker from "../Components/EmojiPicker";
-import {Div} from 'atomize';
+import {Col, Div, Row} from "atomize";
+import axios from "axios";
+import buildSettings from "../buildSettings.json";
+import {withRouter} from "react-router";
+import CategoriesList from "../Components/Guild/CategoriesList";
+import OptionsCategory from "../Components/Guild/OptionsCategory";
 
+class ManageGuild extends React.Component {
+    constructor(props) {
+        super(props);
+        this.props = props;
+        this.state = {
+            guildOptions: null,
+            updatedSettings: null,
+            guilds: JSON.parse(localStorage.getItem('guilds') || "[]"),
+            uuid: localStorage.getItem('uuid'),
+            guild_id: this.props.match.params.guild_id,
+            guild: {},
+            actualCategory: null,
+            guildSettings: {},
+            showSubmit: false,
+        }
+    }
 
-const buildSettings = require('../buildSettings.json');
+    setActualCategory = (c) => this.setState({actualCategory: c});
 
-const ManageGuildPage = (props) => {
-    const [first, setFirst] = useState(true);
-    const navigate = useNavigate();
-    const {guild_id} = useParams();
-    const [guildId, setGuildId] = useState(null);
-    const Guilds = JSON.parse(localStorage.getItem('guilds') || "[]");
-    const Guild = Guilds.find(g => g.id == guild_id);
+    setGuildSettings = (s) => this.setState({guildSettings: s});
 
-    const [showNotification, setNotification] = useState(false);
-    const [notificationText, setNotificationText] = useState(null);
-    const [notificationType, setNotificationType] = useState('success700');
+    /*shouldComponentUpdate(nextProps, nextState, nextContext) {
+        if(nextProps.match.params.guild_id == this.state.guild_id)return false;
+        return true;
+    }*/
 
-    const [showModal, setModal] = useState(false);
-    const [modalText, setModalText] = useState('');
+    componentDidMount() {
+        this.state.guild = this.state.guilds.find(g => g.id == this.state.guild_id);
+        this.FetchGuildOptions();
+    }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevState.guild_id != this.props.match.params.guild_id) {
+            this.setState({
+                guild_id: this.props.match.params.guild_id,
+                guildOptions: null,
+                updatedSettings: null,
+                guildSettings: {},
+                showSubmit: false
+            });
+            this.state.guild = this.state.guilds.find(g => g.id == this.state.guild_id);
+            this.FetchGuildOptions();
+        }
 
-    const [GuildOptions, SetGuildOptions] = useState(null);
-    let refs = {};
+        if (Object.values(this.state.guildSettings)[0] && prevState.showSubmit != true) {
+            this.setState({showSubmit: true});
+        }
 
-    const uuid = localStorage.getItem('uuid');
+        console.log(this.state);
+    }
 
-    const FetchGuildOptions = async () => {
-        SetGuildOptions(null);
-        const res = await axios.post(`${buildSettings.settings.serverUrl}/api/@guild`, {uuid, guild_id});
-        SetGuildOptions(res.data.options);
+    FetchGuildOptions = async () => {
+        const res = await axios.post(`${buildSettings.settings.serverUrl}/api/@guild`, {
+            uuid: this.state.uuid,
+            guild_id: this.props.match.params.guild_id
+        });
+        this.setState({guildOptions: res.data.options});
         return res;
     }
 
-    useEffect(() => {
-        FetchGuildOptions();
-    }, [guild_id]);
-
-    const doRefs = async () => {
-        let returnJson = {};
-        for (const category of GuildOptions) {
-            returnJson[category.id] = {};
-            for (const option of category.options) {
-                const optionRef = refs[guild_id][category.id]?.[option.id];
-                if (optionRef) {
-                    returnJson[category.id][option.id] = optionRef();
-                }
-            }
-        }
-
-        const res = await axios.post(`${buildSettings.settings.serverUrl}/api/@update`, {
-            uuid,
-            guild_id,
-            options: returnJson
-        });
-
-        setModal(true);
-        setModalText('hello world!');
-
-        if (res.data.success) {
-            setNotification(true);
-            setNotificationType('success700');
-            setNotificationText('Pomyślnie zaaktualizowano ustawienia.');
-        } else {
-            setNotification(true);
-            setNotificationType('warning700');
-            setNotificationText(res.data.message);
-        }
-    }
-
-    return (
-        <GridPage active={Guild.id}>
-            <h1>Manage {Guild.name}.</h1>
-            <div>
-                {
-                    GuildOptions ?
-                        GuildOptions.map(category => {
-                            if (!refs[guild_id]) refs[guild_id] = {};
-                            refs[guild_id][category.id] = {};
-                            return (
-                                <div key={Guild.id}>
-                                    <p>{Guild.name}</p>
-                                    <h1>{category.name} ({category.id})</h1>
+    render() {
+        return (
+            <GridPage active={this.state.guild_id}>
+                <Div>
+                    <Row>
+                        <Col size={{
+                            xs: '12',
+                            sm: '12',
+                            md: '12',
+                            lg: '3',
+                            xl: '3'
+                        }} style={{paddingTop: '2rem', paddingRight: '1.5rem', paddingLeft: '1.5rem'}}>
+                            <Div style={{
+                                padding: '1rem',
+                                display: 'absolute',
+                                backgroundColor: '#2f3136',
+                                borderRadius: '20px',
+                                boxShadow: '0px 0px 9px rgba(0, 0, 0, 0.09)'
+                            }}>
+                                {
+                                    this.state.guildOptions ?
+                                        <CategoriesList guild={this.state.guild} categories={this.state.guildOptions}
+                                                        guild_id={this.state.guild_id}
+                                                        actualCategory={this.state.actualCategory}
+                                                        setActualCategory={this.setActualCategory}/>
+                                        :
+                                        null
+                                }
+                            </Div>
+                        </Col>
+                        <Col size={{
+                            xs: '12',
+                            sm: '12',
+                            md: '12',
+                            lg: '9',
+                            xl: '9'
+                        }}>
+                            <Div p="1rem" style={{paddingTop: '2rem'}}>
+                                <h1>Manage {this.state.guild.name}.</h1>
+                                <div>
                                     {
-                                        category.options.map(option => {
-
-                                            if (option.optionType.type == 'TextInput') {
-                                                return (
-                                                    <Div style={{width:'100%'}}>
-                                                        <TextInput
-                                                            style={{width:'100%'}}
-                                                            option={option}
-                                                            ref={(r) => {
-                                                                refs[guild_id][category.id][option.id] = r?.getOptionData;
-                                                            }}
-                                                            clientValidate={eval(option.clientValidation)}
-                                                        />
-                                                    </Div>
-                                                );
-                                            }
-
-
-                                        })
+                                        this.state.actualCategory && this.state.guildOptions && this.state.guild ?
+                                            <OptionsCategory guild={this.state.guild} guild_id={this.state.guild_id}
+                                                             key={this.state.actualCategory}
+                                                             category={this.state.guildOptions.find(c => c.id == this.state.actualCategory)}
+                                                             guildSettings={this.state.guildSettings}
+                                                             setGuildSettings={this.setGuildSettings}/>
+                                            :
+                                            <a>Loading...</a>
                                     }
                                 </div>
-                            )
-                        }) : null
-                }
-            </div>
-            <div>
-                <button onClick={() => doRefs()}>Click</button>
-            </div>
-
-
-            <>
-                <Notification
-                    bg={notificationType}
-                    isOpen={showNotification}
-                    onClose={notificationType.startsWith('warning') ? null : () => setNotification(false)}
-                    suffix={
-                        notificationType.startsWith('warning') ?
-                            <Icon
-                                name="Cross"
-                                pos="absolute"
-                                top="1rem"
-                                right="0.5rem"
-                                color="white"
-                                size="18px"
-                                cursor="pointer"
-                                m={{r: "0.5rem"}}
-                                onClick={() => setNotification(false)}
-                            />
-                            :
-                            null
-                    }
-                    prefix={
-                        <Icon
-                            name="Success"
-                            color="white"
-                            size="18px"
-                            m={{r: "0.5rem"}}
-                        />
-                    }
-                    style={{
-                        zIndex: 593554345
-                    }}
-                >
-                    {notificationText}
-                </Notification>
-            </>
-            <div style={{zIndex: 5523235232}}>
-                <BasicModal
-                    isOpen={showModal}
-                    onClose={() => setModal(false)}
-                    text={modalText}
-                />
-            </div>
-        </GridPage>
-    )
+                                <div>
+                                    JSON with only to update:
+                                    {' '}
+                                    {
+                                        JSON.stringify(this.state.guildSettings, null, 3)
+                                    }
+                                </div>
+                                <div>
+                                    Show submit?
+                                    {' '}
+                                    {
+                                        this.state.showSubmit.toString()
+                                    }
+                                </div>
+                            </Div>
+                        </Col>
+                    </Row>
+                </Div>
+            </GridPage>
+        )
+    }
 }
 
-export default ManageGuildPage;
+export default withRouter(ManageGuild);

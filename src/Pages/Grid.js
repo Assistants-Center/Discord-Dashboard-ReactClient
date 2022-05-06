@@ -12,11 +12,11 @@ import {
     ListItem,
     ThemeProvider,
     Toolbar,
-    Typography,
-    Tooltip
+    Tooltip,
+    Typography
 } from '@mui/material';
 
-import {useNavigate} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 import {Div} from 'atomize';
 
 import CollapseUser from '../Components/collapse/CollapseUser';
@@ -47,7 +47,7 @@ const theme = createTheme({
 const drawerWidth = 84;
 
 export default function GridPage(props) {
-    const navigate = useNavigate();
+    const history = useHistory();
     const {window, active} = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -68,8 +68,9 @@ export default function GridPage(props) {
                 paddingLeft: '1rem'
             }}>
                 <Tooltip title={"Home"} placement="right" arrow>
-                <a><img className={'onHoverBigger'} src={require('./../icons/homeicon.png')} width={'50rem'} height={'50rem'}
-                        style={{borderRadius: '3rem'}} onClick={() => navigate('/')}/></a>
+                    <a><img className={'onHoverBigger'} src={require('./../icons/homeicon.png')} width={'50rem'}
+                            height={'50rem'}
+                            style={{borderRadius: '3rem'}} onClick={() => history.push('/')}/></a>
                 </Tooltip>
             </Div>
 
@@ -109,7 +110,7 @@ export default function GridPage(props) {
                                 },
                                 display: 'flex',
                                 flexDirection: 'column'
-                            }} onClick={() => navigate(`/guild/${guild.id}`)}>
+                            }} onClick={() => history.push(`/guild/${guild.id}`)}>
                                 <Tooltip title={guild.name} placement="right" arrow>
                                     <img
                                         className={'onHover'}
@@ -119,7 +120,7 @@ export default function GridPage(props) {
                                         border: active == guild.id ? '3px solid gray' : ''
                                     }}/>
                                 </Tooltip>
-                                {guild.icon ? null : guild.name.split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'')}
+                                {guild.icon ? null : guild.name.split(/\s/).reduce((response, word) => response += word.slice(0, 1), '')}
                             </ListItem>
                         </Div>
                         : null;
@@ -147,10 +148,10 @@ export default function GridPage(props) {
                             textDecoration: "line-through",
                             backgroundColor: 'red'
                         }
-                    }} onClick={() => navigate(`/guild/`)}>
+                    }} onClick={() => history.push(`/guild/`)}>
                         <Tooltip title={"Add to server"} placement="right" arrow>
-                        <img className={'onHoverBigger'} src={require('./../icons/discord_plus_icon.png')}
-                             width={'50rem'} height={'50rem'} style={{borderRadius: '50rem'}}/>
+                            <img className={'onHoverBigger'} src={require('./../icons/discord_plus_icon.png')}
+                                 width={'50rem'} height={'50rem'} style={{borderRadius: '50rem'}}/>
                         </Tooltip>
                     </ListItem>
                 </Div>
@@ -168,7 +169,7 @@ export default function GridPage(props) {
                             textDecoration: "line-through",
                             backgroundColor: 'red'
                         }
-                    }} onClick={() => navigate(`/guild/`)}>
+                    }} onClick={() => history.push(`/guild/`)}>
                         <Tooltip title={"Privacy Policy"} placement="right" arrow>
                             <img className={'onHoverBigger'} src={require('./../icons/discord_plus_icon.png')}
                                  width={'50rem'} height={'50rem'} style={{borderRadius: '50rem'}}/>
@@ -210,7 +211,12 @@ export default function GridPage(props) {
                         >
                             <MenuIcon/>
                         </IconButton>
-                        <Div style={{width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Div style={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}>
                             <Typography variant="h6" noWrap component="div" sx={{
                                 display: 'block'
                             }}>
@@ -272,7 +278,7 @@ export default function GridPage(props) {
                 </Box>
                 <Box
                     component="main"
-                    sx={{flexGrow: 1, p: 3, width: {sm: `calc(100% - ${drawerWidth}px)`}}}
+                    sx={{flexGrow: 1, width: {sm: `calc(100% - ${drawerWidth}px)`}}}
                 >
                     <Toolbar style={{height: '90px'}}/>
                     <Div>

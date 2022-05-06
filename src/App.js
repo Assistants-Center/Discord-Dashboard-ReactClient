@@ -1,17 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {Route, Routes, useNavigate} from "react-router-dom";
+import {Route, Switch, useHistory} from "react-router-dom";
 
 import AuthPage from "./Pages/Auth";
 import OptionsPage from "./Pages/Options";
 import GuildsListPage from "./Pages/GuildsList";
 import ManageGuildPage from "./Pages/ManageGuild";
-import GridPage from "./Pages/Grid";
 import HomePage from './Pages/Home';
+
+import Parent from './Pages/Test';
 
 const buildSettings = require('./buildSettings.json');
 
 function App() {
-    const navigate = useNavigate();
+    const history = useHistory();
     const [serverError, setServerError] = useState(false);
     let User = JSON.parse(localStorage.getItem('user') || "{}");
 
@@ -66,24 +67,29 @@ function App() {
                     null
             }
 
-            <Routes>
-                <Route exact path="/" element={<HomePage/>}/>
-                <Route path="grid" element={<GridPage/>}/>
-                <Route path="*" element={
-                    <>
-                        {
-                            User.id ? null : navigate('/auth')
-                        }
-                        <Routes>
-                            <Route path="auth" element={<AuthPage/>}/>
-                            <Route path="options" element={<OptionsPage/>}/>
-                            <Route path="dashboard" element={<GuildsListPage/>}/>
-                            <Route path="guild/:guild_id" element={<ManageGuildPage/>}/>
-                            <Route path="*" element={<h1>That's 404</h1>}/>
-                        </Routes>
-                    </>
-                }/>
-            </Routes>
+            <Switch>
+                <Route exact path="/">
+                    <HomePage/>
+                </Route>
+                <Route path="/auth">
+                    <AuthPage/>
+                </Route>
+                <Route path="/options">
+                    <OptionsPage/>
+                </Route>
+                <Route path="/dashboard">
+                    <GuildsListPage/>
+                </Route>
+                <Route path="/guild/:guild_id">
+                    <ManageGuildPage/>
+                </Route>
+                <Route path="/test">
+                    <Parent/>
+                </Route>
+                <Route path="*">
+                    <h1>That's 404</h1>
+                </Route>
+            </Switch>
         </>
     );
 }

@@ -1,1 +1,11 @@
-{}
+{
+  "settings": {
+    "OAuth2Client": {
+      "id": "849972188786065458"
+    },
+    "serverUrl": "http://localhost",
+    "clientUrl": "http://localhost:3000",
+    "websiteName": "Assistants Center"
+  },
+  "version": "1.0.0-beta.2"
+}

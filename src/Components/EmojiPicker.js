@@ -1,20 +1,19 @@
-import { Picker } from 'emoji-picker-element';
 import './EmojiPicker.css';
 import {Div} from 'atomize';
-import React, {useEffect} from "react";
+import React from "react";
 
 
-const PickerComponent = ({customEmoji,addEmoji}) => {
+const PickerComponent = ({customEmoji, addEmoji}) => {
     const ref = React.useRef(null)
 
     React.useEffect(() => {
         ref.current.addEventListener('emoji-click', event => {
-           addEmoji(event);
+            addEmoji(event);
         })
         ref.current.customEmoji = customEmoji || [];
     }, []);
 
-    return React.createElement('emoji-picker', { ref })
+    return React.createElement('emoji-picker', {ref})
 }
 
 export default class EmojiPicker extends React.Component {
@@ -36,7 +35,7 @@ export default class EmojiPicker extends React.Component {
 
     render() {
         return (
-            <Div style={{display: this.props.display ? 'block' : 'none',position: 'fixed'}}>
+            <Div style={{display: this.props.display ? 'block' : 'none', position: 'fixed'}}>
                 <Div style={{maxWidth: '100%'}}>
                     <PickerComponent addEmoji={this.props.addEmoji} customEmoji={this.props.guildEmojisList}/>
                 </Div>

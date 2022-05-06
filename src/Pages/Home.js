@@ -1,11 +1,11 @@
 import React from 'react';
 import {Col, Div, Row} from "atomize";
-import {Link, useSearchParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import AuthPage from "./Auth";
 
 export default function HomePage(props) {
-    const [query] = useSearchParams();
-    if (query.get('uuid')) {
+    const {uuid} = useParams();
+    if (uuid) {
         return (
             <AuthPage/>
         );

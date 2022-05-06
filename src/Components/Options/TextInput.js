@@ -1,5 +1,5 @@
 import React from 'react';
-import {Div, Input, Icon, Button} from 'atomize';
+import {Button, Div, Icon, Input} from 'atomize';
 import './TextInput.css';
 
 import EmojiPicker from '../EmojiPicker';
@@ -40,8 +40,32 @@ export default class TextInput extends React.Component {
     }
 
     addEmoji = (a) => {
-        console.log(a)
-        this.setState({value: (this.state.value || '')+(a.detail.emoji.url ? `<${a.detail.emoji.animated ? 'a' : ''}:${a.detail.emoji.name}:${a.detail.emoji.id}>` : a.detail.emoji.unicode)})
+        const newValue = (this.state.value || '') + (a.detail.emoji.url ? `<${a.detail.emoji.animated ? 'a' : ''}:${a.detail.emoji.name}:${a.detail.emoji.id}>` : a.detail.emoji.unicode);
+
+        let guildSettings = this.props.guildSettings;
+        if (!guildSettings[this.props.category.id]) guildSettings[this.props.category.id] = {};
+        guildSettings[this.props.category.id][this.props.option.id] = newValue;
+        this.props.setGuildSettings(guildSettings);
+
+        this.setState({value: newValue});
+    }
+
+    onChange = (event, clientValidate, setClientValidationError, setOptionValue) => {
+        const value = event.target.value;
+        setClientValidationError(false);
+        if (clientValidate) {
+            const validation = clientValidate(value);
+            if (validation.validated == false) {
+                return setClientValidationError(validation.error);
+            }
+        }
+
+        let guildSettings = this.props.guildSettings;
+        if (!guildSettings[this.props.category.id]) guildSettings[this.props.category.id] = {};
+        guildSettings[this.props.category.id][this.props.option.id] = value;
+        this.props.setGuildSettings(guildSettings);
+
+        setOptionValue(value);
     }
 
     render() {
@@ -53,31 +77,18 @@ export default class TextInput extends React.Component {
         const setClientValidationError = (e) => this.setState({clientValidationError: e});
         const setOptionValue = (t) => this.setState({value: t});
 
-        const onChange = (event) => {
-            const value = event.target.value;
-            setClientValidationError(false);
-            if (clientValidate) {
-                const validation = clientValidate(value);
-                if (validation.validated == false) {
-                    return setClientValidationError(validation.error);
-                }
-            }
-
-            setOptionValue(value);
-        }
-
         return (
-            <Div style={{width:'100%'}}>
+            <Div style={{width: '100%'}}>
                 <h1>This is TextInput.</h1>
                 <Div ref={this.wrapperRef}>
                     <Input
                         ref={this.wrapperRef}
                         placeholder="Basic Input"
                         textColor={'#000000'}
-                        onChange={onChange}
-                        value={this.state.value}
-                        style={{width:'100%', borderRadius: '20px'}}
-                        p={{ l: "3.3rem" }}
+                        onChange={(e) => this.onChange(e, clientValidate, setClientValidationError, setOptionValue)}
+                        value={this.props.guildSettings[this.props.category.id]?.[this.props.option.id] || this.state.value}
+                        style={{width: '100%', borderRadius: '20px'}}
+                        p={{l: "3.3rem"}}
                         prefix={
                             <Button
                                 pos="absolute"
@@ -87,7 +98,12 @@ export default class TextInput extends React.Component {
                                 w="3rem"
                                 top="0"
                                 left="0rem"
-                                style={{borderTopLeftRadius: '20px', borderBottomLeftRadius: '20px', borderTopRightRadius: '0px', borderBottomRightRadius: '0px'}}
+                                style={{
+                                    borderTopLeftRadius: '20px',
+                                    borderBottomLeftRadius: '20px',
+                                    borderTopRightRadius: '0px',
+                                    borderBottomRightRadius: '0px'
+                                }}
                             >
                                 <Icon
                                     name="Search"
@@ -101,7 +117,8 @@ export default class TextInput extends React.Component {
                     <a>{this.state.clientValidationError}</a>
 
                     <Div>
-                        {useEmojiPicker ? <EmojiPicker display={this.state.displayEmojiPicker} addEmoji={this.addEmoji} guildEmojisList={guildEmojisList}/> : null}
+                        {useEmojiPicker ? <EmojiPicker display={this.state.displayEmojiPicker} addEmoji={this.addEmoji}
+                                                       guildEmojisList={guildEmojisList}/> : null}
                     </Div>
                 </Div>
             </Div>
