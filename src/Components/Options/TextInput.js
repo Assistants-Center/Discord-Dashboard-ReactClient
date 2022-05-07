@@ -93,7 +93,6 @@ export default class TextInput extends React.Component {
                             <Button
                                 pos="absolute"
                                 onClick={() => {
-                                    console.log('a')
                                     this.setState({displayEmojiPicker: !this.state.displayEmojiPicker})
                                 }}
                                 bg="info700"
@@ -122,6 +121,9 @@ export default class TextInput extends React.Component {
                     <Div>
                         {useEmojiPicker ? <EmojiPicker display={this.state.displayEmojiPicker} addEmoji={this.addEmoji}
                                                        guildEmojisList={guildEmojisList}/> : null}
+                    </Div>
+                    <Div>
+                        {this.props.isErrored ? this.props.isErrored.error : null}
                     </Div>
                 </Div>
             </Div>

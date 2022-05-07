@@ -1,6 +1,6 @@
 import React from 'react';
 import GridPage from "./Grid";
-import {Col, Div, Row, Text} from "atomize";
+import {Col, Div, Row, Text, Button, Icon} from "atomize";
 import axios from "axios";
 import buildSettings from "../buildSettings.json";
 import {withRouter} from "react-router";
@@ -22,6 +22,7 @@ class ManageGuild extends React.Component {
             actualCategory: null,
             guildSettings: {},
             showSubmit: false,
+            erroredOptions: [],
         }
     }
 
@@ -46,17 +47,16 @@ class ManageGuild extends React.Component {
                 guildOptions: null,
                 updatedSettings: null,
                 guildSettings: {},
-                showSubmit: false
+                showSubmit: false,
+                actualCategory: null,
             });
             this.state.guild = this.state.guilds.find(g => g.id == this.state.guild_id);
             this.FetchGuildOptions();
         }
 
         if (Object.values(this.state.guildSettings)[0] && prevState.showSubmit != true) {
-            this.setState({showSubmit: true});
+            this.setState({showSubmit: true, erroredOptions: []});
         }
-
-        console.log(this.state);
     }
 
     FetchGuildOptions = async () => {
@@ -66,6 +66,32 @@ class ManageGuild extends React.Component {
         });
         this.setState({guildOptions: res.data.options});
         return res;
+    }
+
+    SubmitData = async () => {
+        const res = await axios.post(`${buildSettings.settings.serverUrl}/api/@update`, {
+            uuid: this.state.uuid,
+            guild_id: this.props.match.params.guild_id,
+            options: this.state.guildSettings,
+        });
+        console.log(res.data);
+        if(res.data?.success){
+            this.setState({
+                guildSettings: {},
+                showSubmit: false,
+            });
+
+            const res = await axios.post(`${buildSettings.settings.serverUrl}/api/@guild`, {
+                uuid: this.state.uuid,
+                guild_id: this.props.match.params.guild_id
+            });
+            this.setState({guildOptions: res.data.options});
+        }
+        if(res.data?.erroredOptions){
+            this.setState({
+                erroredOptions: res.data.erroredOptions,
+            });
+        }
     }
 
     render() {
@@ -95,7 +121,7 @@ class ManageGuild extends React.Component {
                                                         actualCategory={this.state.actualCategory}
                                                         setActualCategory={this.setActualCategory}/>
                                         :
-                                        <Text>Loading Guild Info...</Text>
+                                        <CategoriesList preload/>
                                 }
                             </Div>
                         </Col>
@@ -107,7 +133,13 @@ class ManageGuild extends React.Component {
                             xl: '9'
                         }}>
                             <Div p="1rem" style={{paddingTop: '2rem'}}>
-                                <h1>Manage {this.state.guild.name}.</h1>
+                                {
+                                    this.state.actualCategory && this.state.guildOptions && this.state.guild
+                                    ?<h1>Manage {this.state.guild.name}.</h1>
+                                        :
+                                    null
+
+                                }
                                 <div>
                                     {
                                         this.state.actualCategory && this.state.guildOptions && this.state.guild ?
@@ -115,9 +147,10 @@ class ManageGuild extends React.Component {
                                                              key={this.state.actualCategory}
                                                              category={this.state.guildOptions.find(c => c.id == this.state.actualCategory)}
                                                              guildSettings={this.state.guildSettings}
-                                                             setGuildSettings={this.setGuildSettings}/>
+                                                             setGuildSettings={this.setGuildSettings} submit={this.state.submit}
+                                                             erroredOptions={this.state.erroredOptions}/>
                                             :
-                                            <a>Loading...</a>
+                                            null
                                     }
                                 </div>
                                 <div>
@@ -152,8 +185,23 @@ class ManageGuild extends React.Component {
                         justifyContent:'space-between',
                         alignItems:'center',
                     }}>
-                        <Text style={{paddingLeft:'2rem'}}>Changes detected!</Text>
-                        <Text style={{paddingRight:'2rem'}}>BUTTON</Text>
+                        <Text style={{paddingLeft:'2rem'}} textWeight={600}>Changes detected!</Text>
+                        <Div style={{paddingRight:'2rem'}}>
+                            <Button
+                                bg={'#8339c9'}
+                                hoverBg={'#bf31e0'}
+                                rounded="circle"
+                                p={{ r: "1.5rem", l: "1.5rem" }}
+                                shadow="3"
+                                hoverShadow="4"
+                                onClick={()=>this.SubmitData()}
+                                style={{
+                                    visibility: this.state.showSubmit ? 'visible' : 'hidden',
+                                }}
+                            >
+                                Submit
+                            </Button>
+                        </Div>
                     </Div>
                 </Div>
             </GridPage>
